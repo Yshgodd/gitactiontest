@@ -23,7 +23,8 @@ jobs:
               - ./a/**
             b:
               - ./b/**
+      - name: Print changed files
         run: |
-          echo "Changed files: ${{ steps.changed-files-between-commit.outputs.files }}"
-          echo "Changed files a: ${{ steps.changed-files-between-commit.outputs.files_a }}"
-          echo "Changed files b: ${{ steps.changed-files-between-commit.outputs.files_b }}"
+          echo "Changed files: ${{ steps.changed-files-between-commit.outputs }}"
+        # echo "Changed files a: ${{ steps.changed-files-between-commit.outputs }}"
+        # echo "Changed files b: ${{ steps.changed-files-between-commit.outputs }}"
