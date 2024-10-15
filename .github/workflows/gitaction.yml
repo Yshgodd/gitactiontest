@@ -24,4 +24,4 @@ jobs:
 
       - name: Output changed folders
         run: |
-          echo "Changed folders: ${{ steps.changed_folders.outputs.dirs }}"
+          echo "Changed folders: ${{ steps.changed_folders.outputs.changed_dirs }}"
