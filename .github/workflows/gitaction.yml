@@ -1,30 +1,26 @@
-name: React build apple
+name: Detect Changed Folders
 
-######### master branch에 push 되었을때만 실행#########
-on: 
-  push:            
-    branches: [ "main" ]
-
-######### master branch에 push 되었을때만 실행#########
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  React-Build-ssh-action:
+  detect-changes:
     runs-on: ubuntu-latest
-    name: Build
+
     steps:
-      - name: Get changed files
-        id: changed-files-between-commit
-        uses: tj-actions/changed-files@v44
-        continue-on-error: true
-        with:
-          since_last_remote_commit: true
-          files_yaml: |
-            a:
-              - ./a/**
-            b:
-              - ./b/**
-      - name: Print changed files
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Get list of changed folders
+        id: changed_folders
         run: |
-          echo "Changed files: ${{ steps.changed-files-between-commit.outputs }}"
-        # echo "Changed files a: ${{ steps.changed-files-between-commit.outputs }}"
-        # echo "Changed files b: ${{ steps.changed-files-between-commit.outputs }}"
+          # Get list of changed files and extract unique directories
+          changed_dirs=$(git diff --name-only ${{ github.sha }} ${{ github.sha }}~1 | cut -d'/' -f1 | sort -u)
+          echo "$changed_dirs"
+          echo "::set-output name=dirs::$changed_dirs"
+
+      - name: Output changed folders
+        run: |
+          echo "Changed folders: ${{ steps.changed_folders.outputs.dirs }}"
