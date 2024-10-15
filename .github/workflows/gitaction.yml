@@ -1,0 +1,29 @@
+name: React build apple
+
+######### master branch에 push 되었을때만 실행#########
+on: 
+  push:            
+    branches: [ "main" ]
+
+######### master branch에 push 되었을때만 실행#########
+
+jobs:
+  React-Build-ssh-action:
+    runs-on: ubuntu-latest
+    name: Build
+    steps:
+      - name: Get changed files
+        id: changed-files-between-commit
+        uses: tj-actions/changed-files@v44
+        continue-on-error: true
+        with:
+          since_last_remote_commit: true
+          files_yaml: |
+            a:
+              - ./a/**
+            b:
+              - ./b/**
+        run: |
+          echo "Changed files: ${{ steps.changed-files-between-commit.outputs.files }}"
+          echo "Changed files a: ${{ steps.changed-files-between-commit.outputs.files_a }}"
+          echo "Changed files b: ${{ steps.changed-files-between-commit.outputs.files_b }}"
