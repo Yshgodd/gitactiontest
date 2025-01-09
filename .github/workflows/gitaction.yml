@@ -3,27 +3,46 @@ name: Detect Changed Folders
 on:
   push:
     branches:
-      - main
+      - main  # main 브랜치에 push될 때 실행
 
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. 리포지토리 체크아웃
       - name: Check out the repository
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0
-      - name: Get list of changed folders
-        id: changed_folders
-        run: |
-          # Get list of changed files and extract unique directories
-          changed_dirs=$(git diff --name-only ${{ github.sha }} ${{ github.sha }}~1 | cut -d'/' -f1 | sort -u)
-          echo "$changed_dirs"
-          echo "::set-output name=dirs::$changed_dirs"
+          fetch-depth: 0  # 전체 Git 히스토리를 가져옵니다.
 
-      - name: Output changed folders
+      # 2. 변경된 폴더 감지 및 개별 출력 설정
+      - name: Detect and set changed folders
+        id: changes
         run: |
-          for dir in ${{ steps.changed_folders.outputs.dirs }}; do
-            echo "Changed folders: ${{ steps.changed_folders.outputs.dirs }}"
+          # 현재 커밋과 이전 커밋 간의 변경된 파일을 가져옴
+          changed_files=$(git diff --name-only ${{ github.sha }} ${{ github.sha }}~1)
+
+          # 파일 경로에서 상위 디렉토리만 추출하고 중복 제거
+          changed_dirs=$(echo "$changed_files" | cut -d'/' -f1 | sort -u)
+
+          # 인덱스를 초기화하여 폴더별로 출력 설정
+          index=0
+          for dir in $changed_dirs; do
+            echo "Setting output for folder $dir"
+            echo "::set-output name=folder_$index::$dir"
+            index=$((index + 1))
           done
+
+      # 3. 변경된 각 폴더 정보 출력
+      # - name: Output changed folders
+      #   run: |
+      #     index=0
+      #     while [[ $index -lt 10 ]]; do  # 최대 10개의 변경된 폴더를 처리
+      #       folder=$(echo "${{ steps.changes.outputs.folder_$index }}")
+      #       if [ -z "$folder" ]; then
+      #         break  # 폴더가 없으면 루프 종료
+      #       fi
+      #       echo "Folder $index: $folder"
+      #       index=$((index + 1))
+      #     done
