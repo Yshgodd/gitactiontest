@@ -35,14 +35,8 @@ jobs:
           done
 
       # 3. 변경된 각 폴더 정보 출력
-      # - name: Output changed folders
-      #   run: |
-      #     index=0
-      #     while [[ $index -lt 10 ]]; do  # 최대 10개의 변경된 폴더를 처리
-      #       folder=$(echo "${{ steps.changes.outputs.folder_$index }}")
-      #       if [ -z "$folder" ]; then
-      #         break  # 폴더가 없으면 루프 종료
-      #       fi
-      #       echo "Folder $index: $folder"
-      #       index=$((index + 1))
-      #     done
+      - name: Output changed folders
+        run: |
+          for dir in $changed_dirs; do
+            echo "Changed folder: $dir"
+          done
